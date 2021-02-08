@@ -1,3 +1,5 @@
+#Lab1: Firewall. 
+# Authors: Nina Argillander (ninar253) & Louise Almér (loual201).
 #!/bin/sh
 echo "Flushing iptables rules..."
 sleep 1
@@ -48,7 +50,7 @@ iptables -A INPUT -i eth2 -p tcp -m tcp -d 10.19.0.1 --dport 22  -j ACCEPT
 #Firewall must not accept any traffic from LAN,DMZ or Internet
 iptables -A INPUT -d 10.19.0.1 -j DROP
 
-## OTHER ## TODO: Ask L.A how to read this command correcly and should this be above firewall rule since we disguise the ip?
+## OTHER ##
 #Firewall implement source NAT for LAN hosts in 192.168.12.0/24
 iptables -t nat -A POSTROUTING -s 10.19.1.129 -d 192.168.12.0/24  -j SNAT --to-source 10.19.0.1
 
@@ -71,8 +73,5 @@ iptables -A FORWARD -i eth0 -m state --state NEW -j DROP
 iptables -A FORWARD -i eth1 -m state --state NEW -j DROP 
 #New connections from LAN is allowed
 iptables -A FORWARD -i eth2 -m state --state NEW -j ACCEPT 
-
-# TODO: should we drop the rest of the connections?
-#iptables -A FORWARD -j DROP
 
 echo "Setting iptables rules... done"
