@@ -10,11 +10,11 @@ def get_addresses(input_address):
     morevalues = 0
     nr_txs = 0
     n_tx = address_info.get('n_tx')
-    while(address_info.get("hasMore")): #TODO:Get good programming practice here
+    while(address_info.get("hasMore") and morevalues < 150): #TODO:Get good programming practice here
         morevalues = morevalues + 50
-        print(address_info.get("hasMore"))
+        print("hasMore is : ", address_info.get("hasMore"))
+        print("morevalue is : " , morevalues)
         txs = address_info.get('txs')
-
         # Times sent to address (output)
         for t in txs:
             nr_txs = nr_txs + 1
@@ -32,5 +32,5 @@ def get_addresses(input_address):
         address_info = get_address_full(address=input_address, txn_limit=50,before_bh=morevalues)
    
     print("this is number of transactions:", n_tx)
-    print(nr_txs)
-    return dict(addresses=arr,count=count,transaction_value=values)
+    print("number of transactions: ", nr_txs)
+    return dict(addresses=arr,count=count,transaction_value=values) #When an address does not send any move to other addresses dict is empty

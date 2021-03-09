@@ -2,9 +2,20 @@ import numpy as np
 from ismember import ismember
 from blockcypher import get_address_full, get_address_details
 from functions import get_addresses
+import pickle
 
-add_dict = get_addresses('1C1Ford5HUusymXqEQMY3TdWQtyZtsMZAW')
+add_dict = get_addresses('1MDAu9H2FiMchME58AafRwoAJLo2CbEGb9')
 # address_info = get_address_full(address='1C1Ford5HUusymXqEQMY3TdWQtyZtsMZAW', txn_limit=50)
+
+# Store data (serialize)
+with open('third_address.pickle', 'wb') as handle:
+    pickle.dump(add_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+# Load data (deserialize)
+with open('third_address.pickle', 'rb') as handle:
+    unserialized_data = pickle.load(handle)
+
+print(add_dict == unserialized_data)
 
 # txs = address_info.get('txs')
 # n_tx = address_info.get('n_tx')
