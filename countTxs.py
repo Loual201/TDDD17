@@ -3,7 +3,7 @@ from ismember import ismember
 from blockcypher import get_address_full, get_address_details
 from functions import get_addresses
 
-add = get_addresses('1C1Ford5HUusymXqEQMY3TdWQtyZtsMZAW')
+add_dict = get_addresses('1C1Ford5HUusymXqEQMY3TdWQtyZtsMZAW')
 # address_info = get_address_full(address='1C1Ford5HUusymXqEQMY3TdWQtyZtsMZAW', txn_limit=50)
 
 # txs = address_info.get('txs')
