@@ -19,7 +19,7 @@ def get_addresses(input_address):
         for t in txs:
             nr_txs = nr_txs + 1
             addresses = t.get('outputs')[0].get('addresses')
-
+            
             [a, b] = ismember(addresses, arr)
             if a:
                 count[b[0]] = count[b[0]] + 1
@@ -33,4 +33,31 @@ def get_addresses(input_address):
    
     print("this is number of transactions:", n_tx)
     print("number of transactions: ", nr_txs)
-    return dict(addresses=arr,count=count,transaction_value=values) #When an address does not send any move to other addresses dict is empty
+    
+    return dict(addresses=arr,count=count,transaction_value=values,source=input_address) #When an address does not send any move to other addresses dict is empty
+
+
+def filter_by_choice(dataset, choice,threshold):
+    value = dataset.get("transaction_value")
+    transaction = dataset.get('count')
+    output = dataset.get('addresses')
+    filtered_transaction = []
+    filtered_value = []
+    filtered_output = []
+    if choice == 1:
+        # Look at total amount of transaction value
+        for i, val in enumerate(value):
+            if(val > threshold):
+                filtered_transaction.append(transaction[i])
+                filtered_output.append(output[i])
+                filtered_value.append(val)
+    if choice == 2:
+        # Look at number of transaction 
+        for i, tran in enumerate(transaction):
+            if(tran > threshold):
+                filtered_transaction.append(tran)
+                filtered_output.append(output[i])
+                filtered_value.append(value[i])
+
+        
+    return dict(addresses=filtered_output,count=filtered_transaction,transaction_value=filtered_value)

@@ -1,6 +1,7 @@
 import plotly.graph_objects as go
 import numpy as np
 import pickle
+from functions import filter_by_choice
 
 with open('first_address.pickle', 'rb') as handle:
     first= pickle.load(handle)
@@ -11,21 +12,38 @@ with open('second_address.pickle', 'rb') as handle:
 with open('third_address.pickle', 'rb') as handle:
     third= pickle.load(handle)
 
-f_len = first.get('addresses')
-f_zero = np.zeros(len(f_len))
+dataset = second
+
+# #Filtered by money
+filt_by_money = filter_by_choice(dataset,1,100000)
+output = filt_by_money.get('addresses')
+value = filt_by_money.get('transaction_value')
+
+#Filtered by transactions
+# filt_by_transaction = filter_by_choice(first,2,1)
+# output = filt_by_transaction.get('addresses')
+# value = filt_by_transaction.get('transaction_value')
+
+
+#source = first.get('source') TODO
+source = dataset.get('source')
+print(output)
+source_arr = np.zeros(len(output))
+target_arr = np.arange(1,len(output)+1,1)
+output.insert(0,source)
 
 fig = go.Figure(data=[go.Sankey(
     node = dict(
       pad = 15,
       thickness = 20,
       line = dict(color = "black", width = 0.5),
-      label = first.get('addresses'),
+      label = output,
       color = "blue"
     ),
     link = dict(
-      source = f_zero, # indices correspond to labels, eg A1, A2, A1, B1, ...
-      target = first.get('addresses'),
-      value = first.get("transaction_value")
+      source = source_arr, # indices correspond to labels, eg A1, A2, A1, B1, ...
+      target = target_arr, 
+      value = value
   ))])
 
 fig.update_layout(title_text="Basic Sankey Diagram", font_size=10)
