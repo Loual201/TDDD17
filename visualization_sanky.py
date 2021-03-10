@@ -3,6 +3,8 @@ import numpy as np
 import pickle
 from functions import filter_by_choice
 
+
+
 with open('first_address.pickle', 'rb') as handle:
     first= pickle.load(handle)
 
@@ -18,16 +20,17 @@ dataset = second
 filt_by_money = filter_by_choice(dataset,1,100000)
 output = filt_by_money.get('addresses')
 value = filt_by_money.get('transaction_value')
+color =filt_by_money.get('color')
 
 #Filtered by transactions
 # filt_by_transaction = filter_by_choice(first,2,1)
 # output = filt_by_transaction.get('addresses')
 # value = filt_by_transaction.get('transaction_value')
+# color =filt_by_transaction.get('color')
 
 
 #source = first.get('source') TODO
 source = dataset.get('source')
-print(output)
 source_arr = np.zeros(len(output))
 target_arr = np.arange(1,len(output)+1,1)
 output.insert(0,source)
@@ -43,7 +46,8 @@ fig = go.Figure(data=[go.Sankey(
     link = dict(
       source = source_arr, # indices correspond to labels, eg A1, A2, A1, B1, ...
       target = target_arr, 
-      value = value
+      value = value,
+      color = color
   ))])
 
 fig.update_layout(title_text="Basic Sankey Diagram", font_size=10)

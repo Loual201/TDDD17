@@ -1,6 +1,7 @@
 from blockcypher import get_address_full, get_address_details
 import numpy as np
 from ismember import ismember
+import randomcolor
 
 def get_addresses(input_address):
     address_info = get_address_full(address=input_address, txn_limit=50)
@@ -44,6 +45,7 @@ def filter_by_choice(dataset, choice,threshold):
     filtered_transaction = []
     filtered_value = []
     filtered_output = []
+    color = []
     if choice == 1:
         # Look at total amount of transaction value
         for i, val in enumerate(value):
@@ -51,6 +53,10 @@ def filter_by_choice(dataset, choice,threshold):
                 filtered_transaction.append(transaction[i])
                 filtered_output.append(output[i])
                 filtered_value.append(val)
+                rand_color = randomcolor.RandomColor()
+                col = rand_color.generate()
+                color.append(col[0])
+                print(col)
     if choice == 2:
         # Look at number of transaction 
         for i, tran in enumerate(transaction):
@@ -58,6 +64,9 @@ def filter_by_choice(dataset, choice,threshold):
                 filtered_transaction.append(tran)
                 filtered_output.append(output[i])
                 filtered_value.append(value[i])
+                rand_color = randomcolor.RandomColor()
+                col = rand_color.generate()
+                color.append(col[0])
 
         
-    return dict(addresses=filtered_output,count=filtered_transaction,transaction_value=filtered_value)
+    return dict(addresses=filtered_output,count=filtered_transaction,transaction_value=filtered_value, color=color)
