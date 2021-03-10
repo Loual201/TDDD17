@@ -56,7 +56,6 @@ def filter_by_choice(dataset, choice,threshold):
                 rand_color = randomcolor.RandomColor()
                 col = rand_color.generate()
                 color.append(col[0])
-                print(col)
     if choice == 2:
         # Look at number of transaction 
         for i, tran in enumerate(transaction):
