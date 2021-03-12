@@ -4,6 +4,7 @@ from ismember import ismember
 import randomcolor
 
 def get_addresses(input_address):
+    #TODO: Remove input address from output addressessssssessssesss
     address_info = get_address_full(address=input_address, txn_limit=50)
     arr = []
     count = []
