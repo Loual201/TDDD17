@@ -1,4 +1,5 @@
 import plotly.graph_objects as go
+import plotly
 import numpy as np
 import pickle
 from functions import filter_by_choice
@@ -51,4 +52,4 @@ fig = go.Figure(data=[go.Sankey(
   ))])
 
 fig.update_layout(title_text="Basic Sankey Diagram", font_size=10)
-fig.show()
+plotly.offline.plot(fig)
