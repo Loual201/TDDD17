@@ -2,13 +2,10 @@ from blockcypher import get_address_full, get_address_details
 import numpy as np
 from ismember import ismember
 import randomcolor
-from main import number_of_requests_done
-import time 
 
 def get_addresses(input_address):
-    #TODO: Remove input address from output addresses
+    #TODO: Remove input address from output addressessssssessssesss
     address_info = get_address_full(address=input_address, txn_limit=50)
-    number_of_requests_done = number_of_requests_done + 50
     arr = []
     count = []
     values = []
@@ -16,30 +13,28 @@ def get_addresses(input_address):
     nr_txs = 0
     n_tx = address_info.get('n_tx')
 
+    request_counter = 0
+
     while(address_info.get("hasMore") and morevalues < 150): #TODO:Get good programming practice here
-        if(number_of_requests_done <200): # this is for one hour limit, need one day limit too
-            morevalues = morevalues + 50
-            print("hasMore is : ", address_info.get("hasMore"))
-            print("morevalue is : " , morevalues)
-            txs = address_info.get('txs')
-            # Times sent to address (output)
-            for t in txs:
-                nr_txs = nr_txs + 1
-                addresses = t.get('outputs')[0].get('addresses')
-                
-                [a, b] = ismember(addresses, arr)
-                if a:
-                    count[b[0]] = count[b[0]] + 1
-                    values[b[0]] = values[b[0]] + t.get('outputs')[0].get('value')
-                else:
-                    arr.append(addresses[0])
-                    c = 1
-                    count.append(c)
-                    values.append(t.get('outputs')[0].get('value'))
-            address_info = get_address_full(address=input_address, txn_limit=50,before_bh=morevalues)
-            number_of_requests_done = number_of_requests_done + 50 
-        else:
-            time.sleep(60*60*1) 
+        morevalues = morevalues + 50
+        print("hasMore is : ", address_info.get("hasMore"))
+        print("morevalue is : " , morevalues)
+        txs = address_info.get('txs')
+        # Times sent to address (output)
+        for t in txs:
+            nr_txs = nr_txs + 1
+            addresses = t.get('outputs')[0].get('addresses')
+            
+            [a, b] = ismember(addresses, arr)
+            if a:
+                count[b[0]] = count[b[0]] + 1
+                values[b[0]] = values[b[0]] + t.get('outputs')[0].get('value')
+            else:
+                arr.append(addresses[0])
+                c = 1
+                count.append(c)
+                values.append(t.get('outputs')[0].get('value'))
+        address_info = get_address_full(address=input_address, txn_limit=50,before_bh=morevalues)
    
     print("this is number of transactions:", n_tx)
     print("number of transactions: ", nr_txs)

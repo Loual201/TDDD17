@@ -4,7 +4,17 @@ from blockcypher import get_address_full, get_address_details
 from functions import get_addresses
 import pickle
 
+# First address 
 add_dict = get_addresses('1MDAu9H2FiMchME58AafRwoAJLo2CbEGb9')
+
+# loopas
+int_txs = filter_interesting_txs(add_dict)
+
+second_step_add = get_addresses()
+
+
+
+
 # address_info = get_address_full(address='1C1Ford5HUusymXqEQMY3TdWQtyZtsMZAW', txn_limit=50)
 
 # Store data (serialize)
