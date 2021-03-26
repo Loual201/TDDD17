@@ -2,12 +2,70 @@ from blockcypher import get_address_full, get_address_details
 import numpy as np
 from ismember import ismember
 import randomcolor
-from main import number_of_requests_done
 import time 
+
+# Count number of requests, because of limitations from API
+global number_of_requests_done
+
+def collect_intresting_data(address,numb_of_step, filter_choice, threshold):
+    # Initilze to zero
+    global number_of_requests_done
+    number_of_requests_done = 0
+
+    # Array that stores all data to be visualized
+    arr_vis = []
+
+    # Array that stores the step the dictionary belongs to
+    arr_step = []
+
+    # Insert interesing address
+    interesting_address = address
+
+    # Get all the transactions for the interesting address
+    int_add_txs = get_addresses(interesting_address)
+
+    # Filter transactions based on either the amout of money or the number of transactions to an address
+    filtered_addresses = filter_by_choice(int_add_txs,filter_choice, threshold)
+
+    # Add the first dictionary to the visualization array
+    # We only want to see the interesting addresses
+    arr_vis.append(filtered_addresses)
+    # This is the first (0) step in the money flow
+    arr_step.append(0)
+
+    # Get all transactions for all interesting addresses, repeat for desired amout of times
+    for i in range(numb_of_step):
+        # For every address in the dictionary, get their transactions
+
+        # Get the number of address to look at 
+        number_of_add_in_step = len(arr_vis[i].get("addresses"))
+
+        # Loop for every address (to be dict in slot in vis array) 
+        for j in number_of_add_in_step:
+            # Get the dictionary we want to look at
+            current_addresses = arr_vis[j].get("addresses")
+
+            # Get the number of transactions in the current dictionary
+            #num_txs_curr_dict = len(current_addresses)
+
+            for one_address in current_addresses:
+                # get transactions for current address in current dictionary
+                next_step_addresses = get_addresses(one_address)
+                # filter transactions 
+                filtered_addresses = filter_by_choice(next_step_addresses,filter_choice, threshold)
+                # add to array for visualization
+                arr_vis.append(filtered_addresses)
+                arr_step.append(i+1)
+
+
+    # Combine arr_vis and arr_step 
+    combined_arr = np.vstack((arr_vis, arr_step)).T
+    return combined_arr
 
 def get_addresses(input_address):
     #TODO: Remove input address from output addresses
     address_info = get_address_full(address=input_address, txn_limit=50)
+    global number_of_requests_done
     number_of_requests_done = number_of_requests_done + 50
     arr = []
     count = []
@@ -78,3 +136,6 @@ def filter_by_choice(dataset, choice,threshold):
 
         
     return dict(addresses=filtered_output,count=filtered_transaction,transaction_value=filtered_value, color=color)
+
+def visualization_of_data(arr_data):
+    return 0
