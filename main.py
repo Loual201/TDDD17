@@ -1,7 +1,6 @@
 import numpy as np
-from ismember import ismember
-from blockcypher import get_address_full, get_address_details
-from functions import get_addresses, filter_by_choice, visualization_of_data, collect_intresting_data
+from functions import visualization_of_data, collect_intresting_data
+import pickle
 
 #Set the parameters for visulazation
 address = '1MDAu9H2FiMchME58AafRwoAJLo2CbEGb9'
@@ -10,5 +9,14 @@ choice = 1
 number_of_step = 2
 
 data = collect_intresting_data(address, number_of_step, choice, threshold)
+# Save data TODO: test that it works and how it looks
+np.savetxt("data_csv.csv",data,delimiter=",")
+# Store data (serialize)
+with open('data_pickle.pickle', 'wb') as handle:
+    pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-visualization_of_data(combined_arr)
+# Load data (deserialize)
+with open('data_pickle.pickle', 'rb') as handle:
+    unpacked_data = pickle.load(handle)
+
+visualization_of_data(unpacked_data)

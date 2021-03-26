@@ -3,6 +3,8 @@ import numpy as np
 from ismember import ismember
 import randomcolor
 import time 
+import plotly.graph_objects as go
+import plotly
 
 # Count number of requests, because of limitations from API
 global number_of_requests_done
@@ -59,7 +61,7 @@ def collect_intresting_data(address,numb_of_step, filter_choice, threshold):
 
 
     # Combine arr_vis and arr_step 
-    combined_arr = np.vstack((arr_vis, arr_step)).T
+    combined_arr = np.vstack((arr_vis, arr_step))
     return combined_arr
 
 def get_addresses(input_address):
@@ -135,7 +137,61 @@ def filter_by_choice(dataset, choice,threshold):
                 color.append(col[0])
 
         
-    return dict(addresses=filtered_output,count=filtered_transaction,transaction_value=filtered_value, color=color)
+    return dict(addresses=filtered_output,count=filtered_transaction,transaction_value=filtered_value, color=color, source= dataset.get('source'))
 
 def visualization_of_data(arr_data):
-    return 0
+    #Split the data again
+    [datasets, step_order] = np.vsplit(arr_data,2) #TODO: Do we need step_order
+    output = []
+    value = []
+    color = []
+    source_arr = []
+    target_arr = []
+    first_loop = True
+    for dataset in datasets:
+        source = dataset.get(source)
+        output_dataset = dataset.get('addresses')
+        value_dataset = dataset.get('transaction_value')
+        color_dataset = dataset.get('color')
+        if(first_loop):
+            output = output + [source]
+            first_loop = False
+        
+        output_dataset = dataset.get('addresses')
+
+        [member, index] = ismember(output_dataset, source)
+        #print('member: ', member, 'index: ', index)
+        for i, m in enumerate(member):
+            if m:
+                del output_dataset[i]
+                del value_dataset[i]
+                del color_dataset[i]
+
+        output = output + output_dataset
+        value = value + value_dataset
+        color = color + color_dataset
+
+        index = output.index(source)
+        # skapa array med source index från output array, ett index ska repeteras lika många gånger som det finns transaktioner från en address
+        source_arr = source_arr + [index]*len(output_dataset)
+        target_arr = np.arange(1,len(output)+1,1)
+        #  output.insert(0,source)
+
+
+    fig = go.Figure(data=[go.Sankey(
+        node = dict(
+        pad = 15,
+        thickness = 20,
+        line = dict(color = "black", width = 0.5),
+        label = output,
+        color = color
+        ),
+        link = dict(
+        source = source_arr, # indices correspond to labels, eg A1, A2, A1, B1, ...
+        target = target_arr, 
+        value = value,
+        color = 'gray',
+    ))])
+
+    fig.update_layout(title_text="Basic Sankey Diagram", font_size=10)
+    plotly.offline.plot(fig)
