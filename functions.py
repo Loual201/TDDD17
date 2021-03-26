@@ -36,21 +36,22 @@ def collect_intresting_data(address,numb_of_step, filter_choice, threshold):
     arr_step.append(0)
 
     # Get all transactions for all interesting addresses, repeat for desired amout of times
-    for i in range(numb_of_step):
+    for i in range(numb_of_step): #TODO: THIS IS MESSED UP
         # For every address in the dictionary, get their transactions
 
         # Get the number of address to look at 
         number_of_add_in_step = len(arr_vis[i].get("addresses"))
-
+        print("this is arr_vis ", arr_vis)
         # Loop for every address (to be dict in slot in vis array) 
-        for j in number_of_add_in_step:
+        for j in range(number_of_add_in_step):
             # Get the dictionary we want to look at
             current_addresses = arr_vis[j].get("addresses")
 
             # Get the number of transactions in the current dictionary
             #num_txs_curr_dict = len(current_addresses)
-
+            print("this is the current address ", current_addresses)
             for one_address in current_addresses:
+                print("in loop, one_addresss is ", one_address)
                 # get transactions for current address in current dictionary
                 next_step_addresses = get_addresses(one_address)
                 # filter transactions 
@@ -66,21 +67,22 @@ def collect_intresting_data(address,numb_of_step, filter_choice, threshold):
 
 def get_addresses(input_address):
     #TODO: Remove input address from output addresses
-    address_info = get_address_full(address=input_address, txn_limit=50)
+    address_info = get_address_full(address=input_address, txn_limit=3)
     global number_of_requests_done
-    number_of_requests_done = number_of_requests_done + 50
+    number_of_requests_done = number_of_requests_done + 3
     arr = []
     count = []
     values = []
     morevalues = 0
     nr_txs = 0
     n_tx = address_info.get('n_tx')
-
-    while(address_info.get("hasMore") and morevalues < 150): #TODO:Get good programming practice here
+    test = True
+    while(address_info.get("hasMore") and test): #TODO:Get good programming practice here
+        test = False
         if(number_of_requests_done <200): # this is for one hour limit, need one day limit too
-            morevalues = morevalues + 50
-            print("hasMore is : ", address_info.get("hasMore"))
-            print("morevalue is : " , morevalues)
+            morevalues = morevalues + 3
+            #print("hasMore is : ", address_info.get("hasMore"))
+            #print("morevalue is : " , morevalues)
             txs = address_info.get('txs')
             # Times sent to address (output)
             for t in txs:
@@ -96,13 +98,13 @@ def get_addresses(input_address):
                     c = 1
                     count.append(c)
                     values.append(t.get('outputs')[0].get('value'))
-            address_info = get_address_full(address=input_address, txn_limit=50,before_bh=morevalues)
-            number_of_requests_done = number_of_requests_done + 50 
+            address_info = get_address_full(address=input_address, txn_limit=3,before_bh=morevalues)
+            number_of_requests_done = number_of_requests_done + 3
         else:
             time.sleep(60*60*1) 
    
-    print("this is number of transactions:", n_tx)
-    print("number of transactions: ", nr_txs)
+    #print("this is number of transactions:", n_tx)
+    #print("number of transactions: ", nr_txs)
     
     return dict(addresses=arr,count=count,transaction_value=values,source=input_address) #When an address does not send any move to other addresses dict is empty
 
@@ -148,16 +150,18 @@ def visualization_of_data(arr_data):
     source_arr = []
     target_arr = []
     first_loop = True
-    for dataset in datasets:
-        source = dataset.get(source)
-        output_dataset = dataset.get('addresses')
-        value_dataset = dataset.get('transaction_value')
-        color_dataset = dataset.get('color')
+    print("this is the dataset ", datasets)
+    for i, dataset in enumerate(datasets):
+        print(dataset[i])
+        source = dataset[0].get('source')
+        print("this is the source" , source)
+        output_dataset = dataset[0].get('addresses')
+        print("this is the ouput add ", output_dataset)
+        value_dataset = dataset[0].get('transaction_value')
+        color_dataset = dataset[0].get('color')
         if(first_loop):
             output = output + [source]
             first_loop = False
-        
-        output_dataset = dataset.get('addresses')
 
         [member, index] = ismember(output_dataset, source)
         #print('member: ', member, 'index: ', index)
