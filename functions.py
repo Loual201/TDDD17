@@ -41,7 +41,7 @@ def collect_intresting_data(address,numb_of_step, filter_choice, threshold):
 
         # Get the number of address to look at 
         number_of_add_in_step = len(arr_vis[i].get("addresses"))
-        print("this is arr_vis ", arr_vis)
+      #  print("this is arr_vis ", arr_vis)
         # Loop for every address (to be dict in slot in vis array) 
         for j in range(number_of_add_in_step):
             # Get the dictionary we want to look at
@@ -49,13 +49,14 @@ def collect_intresting_data(address,numb_of_step, filter_choice, threshold):
 
             # Get the number of transactions in the current dictionary
             #num_txs_curr_dict = len(current_addresses)
-            print("this is the current address ", current_addresses)
+          #  print("this is the current address ", current_addresses)
             for one_address in current_addresses:
-                print("in loop, one_addresss is ", one_address)
+             #   print("in loop, one_addresss is ", one_address)
                 # get transactions for current address in current dictionary
                 next_step_addresses = get_addresses(one_address)
                 # filter transactions 
                 filtered_addresses = filter_by_choice(next_step_addresses,filter_choice, threshold)
+
                 # add to array for visualization
                 arr_vis.append(filtered_addresses)
                 arr_step.append(i+1)
@@ -85,19 +86,25 @@ def get_addresses(input_address):
             #print("morevalue is : " , morevalues)
             txs = address_info.get('txs')
             # Times sent to address (output)
-            for t in txs:
+            for t in txs: 
+       
                 nr_txs = nr_txs + 1
                 addresses = t.get('outputs')[0].get('addresses')
-                
-                [a, b] = ismember(addresses, arr)
-                if a:
-                    count[b[0]] = count[b[0]] + 1
-                    values[b[0]] = values[b[0]] + t.get('outputs')[0].get('value')
-                else:
-                    arr.append(addresses[0])
-                    c = 1
-                    count.append(c)
-                    values.append(t.get('outputs')[0].get('value'))
+
+                if(addresses[0] != input_address):                
+                    [a, b] = ismember(addresses, arr)
+                    print('addresses: ', addresses)
+                    print('arr: ', arr)
+                    print('a: ', a, ' b: ', b)
+                    if a:
+                        count[b[0]] = count[b[0]] + 1
+                        values[b[0]] = values[b[0]] + t.get('outputs')[0].get('value')
+                    else:
+                        arr.append(addresses[0])
+                        c = 1
+                        count.append(c)
+                        values.append(t.get('outputs')[0].get('value'))
+
             address_info = get_address_full(address=input_address, txn_limit=3,before_bh=morevalues)
             number_of_requests_done = number_of_requests_done + 3
         else:
@@ -109,7 +116,7 @@ def get_addresses(input_address):
     return dict(addresses=arr,count=count,transaction_value=values,source=input_address) #When an address does not send any move to other addresses dict is empty
 
 
-def filter_by_choice(dataset, choice,threshold):
+def filter_by_choice(dataset, choice, threshold):
     value = dataset.get("transaction_value")
     transaction = dataset.get('count')
     output = dataset.get('addresses')
