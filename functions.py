@@ -34,19 +34,20 @@ def collect_intresting_data(address,numb_of_step, filter_choice, threshold):
     arr_vis.append(filtered_addresses)
     # This is the first (0) step in the money flow
     arr_step.append(0)
-
+    current_step = 0
+    arr_index = 0
     # Get all transactions for all interesting addresses, repeat for desired amout of times
-    for i in range(numb_of_step): #TODO: THIS IS MESSED UP
+    while(numb_of_step > current_step): #TODO: THIS IS MESSED UP
         # For every address in the dictionary, get their transactions
 
         # Get the number of address to look at 
-        number_of_add_in_step = len(arr_vis[i].get("addresses"))
+        number_of_add_in_step = len(arr_vis[arr_index].get("addresses"))
       #  print("this is arr_vis ", arr_vis)
         # Loop for every address (to be dict in slot in vis array) 
         for j in range(number_of_add_in_step):
             # Get the dictionary we want to look at
             current_addresses = arr_vis[j].get("addresses")
-
+            
             # Get the number of transactions in the current dictionary
             #num_txs_curr_dict = len(current_addresses)
           #  print("this is the current address ", current_addresses)
@@ -59,8 +60,11 @@ def collect_intresting_data(address,numb_of_step, filter_choice, threshold):
 
                 # add to array for visualization
                 arr_vis.append(filtered_addresses)
-                arr_step.append(i+1)
-
+                arr_step.append(current_step+1)
+            #Move in array to avoid duplicates
+            arr_index = arr_index + 1
+        #Increment for next step
+        current_step = current_step + 1
 
     # Combine arr_vis and arr_step 
     combined_arr = np.vstack((arr_vis, arr_step))
@@ -68,9 +72,9 @@ def collect_intresting_data(address,numb_of_step, filter_choice, threshold):
 
 def get_addresses(input_address):
     #TODO: Remove input address from output addresses
-    address_info = get_address_full(address=input_address, txn_limit=3)
+    address_info = get_address_full(address=input_address, txn_limit=5)
     global number_of_requests_done
-    number_of_requests_done = number_of_requests_done + 3
+    number_of_requests_done = number_of_requests_done + 5
     arr = []
     count = []
     values = []
@@ -81,7 +85,7 @@ def get_addresses(input_address):
     while(address_info.get("hasMore") and test): #TODO:Get good programming practice here
         test = False
         if(number_of_requests_done <200): # this is for one hour limit, need one day limit too
-            morevalues = morevalues + 3
+            morevalues = morevalues + 5
             #print("hasMore is : ", address_info.get("hasMore"))
             #print("morevalue is : " , morevalues)
             txs = address_info.get('txs')
@@ -90,10 +94,11 @@ def get_addresses(input_address):
        
                 nr_txs = nr_txs + 1
                 addresses = t.get('outputs')[0].get('addresses')
+                print('addresses: ', addresses[0])
+                print('input address: ', input_address)
 
-                if(addresses[0] != input_address):                
+                if(addresses[0] != input_address): #This probably works, but if too many empty arr = [], here is the problem
                     [a, b] = ismember(addresses, arr)
-                    print('addresses: ', addresses)
                     print('arr: ', arr)
                     print('a: ', a, ' b: ', b)
                     if a:
@@ -105,8 +110,8 @@ def get_addresses(input_address):
                         count.append(c)
                         values.append(t.get('outputs')[0].get('value'))
 
-            address_info = get_address_full(address=input_address, txn_limit=3,before_bh=morevalues)
-            number_of_requests_done = number_of_requests_done + 3
+            address_info = get_address_full(address=input_address, txn_limit=5,before_bh=morevalues)
+            number_of_requests_done = number_of_requests_done + 5
         else:
             time.sleep(60*60*1) 
    
@@ -157,13 +162,13 @@ def visualization_of_data(arr_data):
     source_arr = []
     target_arr = []
     first_loop = True
-    print("this is the dataset ", datasets)
+    #print("this is the dataset ", datasets)
     for i, dataset in enumerate(datasets):
-        print(dataset[i])
+        #print(dataset[i])
         source = dataset[0].get('source')
-        print("this is the source" , source)
+        #print("this is the source" , source)
         output_dataset = dataset[0].get('addresses')
-        print("this is the ouput add ", output_dataset)
+        #print("this is the ouput add ", output_dataset)
         value_dataset = dataset[0].get('transaction_value')
         color_dataset = dataset[0].get('color')
         if(first_loop):
