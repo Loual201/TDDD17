@@ -75,7 +75,7 @@ def collect_intresting_data(address,numb_of_step, filter_choice, threshold, hour
 def get_addresses(input_address, hourly_requests, daily_requests):
     tx_limit = 50
     address_info = get_address_full(address=input_address, txn_limit=tx_limit)
-
+    #print(address_info)
     hourly_requests = hourly_requests + 1
     daily_requests = daily_requests + 1
     print('Here we are again')
@@ -94,7 +94,7 @@ def get_addresses(input_address, hourly_requests, daily_requests):
         print('in while')
         print('DAILY REQUESTS::: ', daily_requests)
         print('HOURLY REQUESTS::: ', hourly_requests)
-        if(hourly_requests < 200 and daily_requests < 4000):
+        if(hourly_requests < 149 and daily_requests < 4000):
             print('IN IFFFF')
             morevalues = morevalues + tx_limit
             txs = address_info.get('txs')
@@ -119,7 +119,7 @@ def get_addresses(input_address, hourly_requests, daily_requests):
             hourly_requests = hourly_requests + 1
             daily_requests = daily_requests + 1
         
-        elif(hourly_requests >= 200 ):
+        elif(hourly_requests >= 149 ):
             print('IN ELSE IF::___ ', hourly_requests)
             print('You have reached your hourly limit of requests, the program will pause for one hour. You have made ', daily_requests, ' requests today')
         #    print('Do you want to save the fetched data and quit?')
