@@ -75,9 +75,10 @@ def collect_intresting_data(address,numb_of_step, filter_choice, threshold, hour
 def get_addresses(input_address, hourly_requests, daily_requests):
     tx_limit = 50
     address_info = get_address_full(address=input_address, txn_limit=tx_limit)
-    
-    hourly_requests = hourly_requests + tx_limit
-    daily_requests = daily_requests + tx_limit
+
+    hourly_requests = hourly_requests + 1
+    daily_requests = daily_requests + 1
+    print('Here we are again')
 
     arr = []
     count = []
@@ -87,17 +88,22 @@ def get_addresses(input_address, hourly_requests, daily_requests):
     n_tx = address_info.get('n_tx')
     test = True
 
-    while(address_info.get("hasMore") and test): #TODO:Get good programming practice here
+    
+    while(address_info.get("hasMore")): #TODO:Get good programming practice here
         test = False
+        print('in while')
+        print('DAILY REQUESTS::: ', daily_requests)
+        print('HOURLY REQUESTS::: ', hourly_requests)
         if(hourly_requests < 200 and daily_requests < 4000):
+            print('IN IFFFF')
             morevalues = morevalues + tx_limit
             txs = address_info.get('txs')
             # Times sent to address (output)
             for t in txs: 
-       
+    
                 nr_txs = nr_txs + 1
                 addresses = t.get('outputs')[0].get('addresses')
-             
+            
                 if(addresses[0] != input_address): #This probably works, but if too many empty arr = [], here is the problem
                     [a, b] = ismember(addresses, arr)
                     if a:
@@ -110,11 +116,19 @@ def get_addresses(input_address, hourly_requests, daily_requests):
                         values.append(t.get('outputs')[0].get('value'))
 
             address_info = get_address_full(address=input_address, txn_limit=tx_limit,before_bh=morevalues)
-            hourly_requests = hourly_requests + tx_limit
-            daily_requests = daily_requests + tx_limit
-
+            hourly_requests = hourly_requests + 1
+            daily_requests = daily_requests + 1
+        
         elif(hourly_requests >= 200 ):
+            print('IN ELSE IF::___ ', hourly_requests)
             print('You have reached your hourly limit of requests, the program will pause for one hour. You have made ', daily_requests, ' requests today')
+        #    print('Do you want to save the fetched data and quit?')
+        #     ans = input()
+
+        #     if(ans == 'yes' or ans == 'y'):
+        #         print('The program will exit and save the data into a csv file')
+        #         return dict(addresses=arr,count=count,transaction_value=values,source=input_address)
+
             time.sleep(60*60*1) 
             hourly_requests = 0
 
@@ -123,9 +137,10 @@ def get_addresses(input_address, hourly_requests, daily_requests):
 
             print('You have reached your daily limit of requests, the program will exit and the fetched data is saved in a csv file')
             return dict(addresses=arr,count=count,transaction_value=values,source=input_address)
-   
+
     return [dict(addresses=arr,count=count,transaction_value=values,source=input_address), hourly_requests, daily_requests] #When an address does not send any move to other addresses dict is empty
 
+   
 
 def filter_by_choice(dataset, choice, threshold):
 
