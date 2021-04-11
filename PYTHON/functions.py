@@ -73,13 +73,6 @@ def collect_intresting_data(address,numb_of_step, filter_choice, threshold, hour
     return arr_vis
 
 def get_addresses(input_address, hourly_requests, daily_requests):
-    tx_limit = 50
-    address_info = get_address_full(address=input_address, txn_limit=tx_limit)
-    #print(address_info)
-    hourly_requests = hourly_requests + 1
-    daily_requests = daily_requests + 1
-    print('Here we are again')
-
     arr = []
     count = []
     values = []
@@ -88,13 +81,29 @@ def get_addresses(input_address, hourly_requests, daily_requests):
     n_tx = address_info.get('n_tx')
     test = True
 
-    
+    tx_limit = 50
+    limit_bool = reached_limit(hourly_requests, daily_requests)
+
+
+    if(not limit_bool):
+        address_info = get_address_full(address=input_address, txn_limit=tx_limit)
+
+        hourly_requests = hourly_requests + 1
+        daily_requests = daily_requests + 1
+        print('Here we are again')
+    else:
+        print('You\'ve reached the daily limit of requests :(')
+        return [dict(addresses=arr,count=count,transaction_value=values,source=input_address), hourly_requests, daily_requests]
+
     while(address_info.get("hasMore")): #TODO:Get good programming practice here
         test = False
         print('in while')
         print('DAILY REQUESTS::: ', daily_requests)
         print('HOURLY REQUESTS::: ', hourly_requests)
-        if(hourly_requests < 149 and daily_requests < 4000):
+     
+        daily_limit_reached = reached_limit(hourly_requests, daily_requests)
+
+        if(not daily_limit_reached):
             print('IN IFFFF')
             morevalues = morevalues + tx_limit
             txs = address_info.get('txs')
@@ -118,29 +127,33 @@ def get_addresses(input_address, hourly_requests, daily_requests):
             address_info = get_address_full(address=input_address, txn_limit=tx_limit,before_bh=morevalues)
             hourly_requests = hourly_requests + 1
             daily_requests = daily_requests + 1
-        
-        elif(hourly_requests >= 149 ):
-            print('IN ELSE IF::___ ', hourly_requests)
-            print('You have reached your hourly limit of requests, the program will pause for one hour. You have made ', daily_requests, ' requests today')
-        #    print('Do you want to save the fetched data and quit?')
-        #     ans = input()
-
-        #     if(ans == 'yes' or ans == 'y'):
-        #         print('The program will exit and save the data into a csv file')
-        #         return dict(addresses=arr,count=count,transaction_value=values,source=input_address)
-
-            time.sleep(60*60*1) 
-            hourly_requests = 0
-
-        elif(daily_requests >= 4000): 
-            # TODO: We are exiting, should we pause it instead?
-
-            print('You have reached your daily limit of requests, the program will exit and the fetched data is saved in a csv file')
-            return dict(addresses=arr,count=count,transaction_value=values,source=input_address)
+    
 
     return [dict(addresses=arr,count=count,transaction_value=values,source=input_address), hourly_requests, daily_requests] #When an address does not send any move to other addresses dict is empty
 
-   
+ def reached_limit(hourly, daily):
+    daily_limit_reached = False
+
+    if(hourly >= 149 ):
+        print('IN ELSE IF::___ ', hourly_requests)
+        print('You have reached your hourly limit of requests, the program will pause for one hour. You have made ', daily_requests, ' requests today')
+    #    print('Do you want to save the fetched data and quit?')
+    #     ans = input()
+
+    #     if(ans == 'yes' or ans == 'y'):
+    #         print('The program will exit and save the data into a csv file')
+    #         return dict(addresses=arr,count=count,transaction_value=values,source=input_address)
+
+        time.sleep(60*60*1) 
+        hourly_requests = 0
+
+    if(daily >= 4000): 
+        # TODO: We are exiting, should we pause it instead?
+        daily_limit_reached = True
+        print('You have reached your daily limit of requests, the program will exit and the fetched data is saved in a csv file')´
+        
+    return daily_limit_reached
+           
 
 def filter_by_choice(dataset, choice, threshold):
 
