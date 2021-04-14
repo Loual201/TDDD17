@@ -4,6 +4,7 @@ d3.sankey = function () {
     nodePadding = 8,
     size = [1, 1],
     nodes = [],
+    nodeAlign = 'left',
     links = [];
 
   sankey.nodeWidth = function (_) {
@@ -34,6 +35,12 @@ d3.sankey = function () {
     if (!arguments.length) return size;
     size = _;
     return sankey;
+  };
+
+  sankey.nodeAlign = function (_) {
+    return arguments.length
+      ? ((align = typeof _ === 'function' ? _ : constant(_)), sankey)
+      : align;
   };
 
   sankey.layout = function (iterations) {
