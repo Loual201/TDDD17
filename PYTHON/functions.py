@@ -81,8 +81,7 @@ def get_addresses(input_address, hourly_requests, daily_requests):
     test = True
 
     tx_limit = 50
-    limit_bool, hourly_requests = reached_limit(hourly_requests, daily_requests)
-
+    limit_bool = reached_limit(hourly_requests, daily_requests)
 
     if(not limit_bool):
         address_info = get_address_full(address=input_address, txn_limit=tx_limit)
@@ -101,7 +100,7 @@ def get_addresses(input_address, hourly_requests, daily_requests):
         print('DAILY REQUESTS::: ', daily_requests)
         print('HOURLY REQUESTS::: ', hourly_requests)
      
-        daily_limit_reached, hourly_requests = reached_limit(hourly_requests, daily_requests)
+        daily_limit_reached = reached_limit(hourly_requests, daily_requests)
 
         if(not daily_limit_reached):
             print('IN IFFFF')
@@ -151,13 +150,13 @@ def reached_limit(hourly, daily):
 
         time.sleep(60*60*1) 
         hourly = 0
+        # TODO: If possible save to csv file, everytime it passes here
 
-    if(daily >= 4000): 
+    if(daily >= 1000): 
         # TODO: We are exiting, should we pause it instead?
         daily_limit_reached = True
-        print('You have reached your daily limit of requests, the program will exit and the fetched data is saved in a csv file')
-        
-    return daily_limit_reached , hourly
+        print('You have reached your daily limit of requests, the program will exit and the fetched data is saved in a csv file')       
+    return daily_limit_reached
            
 
 def filter_by_choice(dataset, choice, threshold):
