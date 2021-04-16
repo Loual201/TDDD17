@@ -78,10 +78,9 @@ def get_addresses(input_address, hourly_requests, daily_requests):
     values = []
     morevalues = 0
     nr_txs = 0
-    test = True
 
     tx_limit = 50
-    limit_bool = reached_limit(hourly_requests, daily_requests)
+    limit_bool, hourly_requests = reached_limit(hourly_requests, daily_requests)
 
     if(not limit_bool):
         address_info = get_address_full(address=input_address, txn_limit=tx_limit)
@@ -95,12 +94,11 @@ def get_addresses(input_address, hourly_requests, daily_requests):
         return [dict(addresses=arr,count=count,transaction_value=values,source=input_address), hourly_requests, daily_requests]
 
     while(n_tx > 0): #TODO:Get good programming practice here
-        test = False
         print('in while')
         print('DAILY REQUESTS::: ', daily_requests)
         print('HOURLY REQUESTS::: ', hourly_requests)
      
-        daily_limit_reached = reached_limit(hourly_requests, daily_requests)
+        daily_limit_reached, hourly_requests = reached_limit(hourly_requests, daily_requests)
 
         if(not daily_limit_reached):
             print('IN IFFFF')
@@ -152,11 +150,11 @@ def reached_limit(hourly, daily):
         hourly = 0
         # TODO: If possible save to csv file, everytime it passes here
 
-    if(daily >= 1000): 
+    if(daily >= 200): 
         # TODO: We are exiting, should we pause it instead?
         daily_limit_reached = True
         print('You have reached your daily limit of requests, the program will exit and the fetched data is saved in a csv file')       
-    return daily_limit_reached
+    return daily_limit_reached, hourly
            
 
 def filter_by_choice(dataset, choice, threshold):
