@@ -80,9 +80,9 @@ def get_addresses(input_address, hourly_requests, daily_requests):
     nr_txs = 0
 
     tx_limit = 50
-    limit_bool, hourly_requests = reached_limit(hourly_requests, daily_requests)
+    daily_limit_reached, hourly_requests = reached_limit(hourly_requests, daily_requests)
 
-    if(not limit_bool):
+    if(not daily_limit_reached):
         address_info = get_address_full(address=input_address, txn_limit=tx_limit)
         n_tx = address_info.get('n_tx')
 
@@ -93,7 +93,7 @@ def get_addresses(input_address, hourly_requests, daily_requests):
         print('You have reached the daily limit of requests :(')
         return [dict(addresses=arr,count=count,transaction_value=values,source=input_address), hourly_requests, daily_requests]
 
-    while(n_tx > 0): #TODO:Get good programming practice here
+    while(n_tx > 0 and daily_limit_reached == False): #TODO:Get good programming practice here
         print('in while')
         print('DAILY REQUESTS::: ', daily_requests)
         print('HOURLY REQUESTS::: ', hourly_requests)
@@ -136,7 +136,12 @@ def get_addresses(input_address, hourly_requests, daily_requests):
 def reached_limit(hourly, daily):
     daily_limit_reached = False
 
-    if(hourly >= 100 ):
+    if(daily >= 100): 
+        # TODO: We are exiting, should we pause it instead?
+        daily_limit_reached = True
+        print('You have reached your daily limit of requests, the program will exit and the fetched data is saved in a csv file') 
+        return daily_limit_reached, hourly 
+    elif(hourly >= 100 ):
         print('IN ELSE IF::___ ', hourly)
         print('You have reached your hourly limit of requests, the program will pause for one hour. You have made ', daily, ' requests today')
     #    print('Do you want to save the fetched data and quit?')
@@ -149,11 +154,7 @@ def reached_limit(hourly, daily):
         time.sleep(60*60*1) 
         hourly = 0
         # TODO: If possible save to csv file, everytime it passes here
-
-    if(daily >= 200): 
-        # TODO: We are exiting, should we pause it instead?
-        daily_limit_reached = True
-        print('You have reached your daily limit of requests, the program will exit and the fetched data is saved in a csv file')       
+     
     return daily_limit_reached, hourly
            
 
