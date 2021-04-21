@@ -40,8 +40,8 @@ if(filter_data == 0):
             # print('source ', dictionary.get('source'))
             source_list.append(dictionary.get('source'))
             for i, address in enumerate(addresses_dict):
-                [a,b] = ismember(address, source_list)
-                if(not a):
+                #[a,b] = ismember(address, source_list)
+                if(not (address in source_list)):
                     writer.writerow([dictionary.get('source'), address, dictionary.get('transaction_value')[i]])
 
 elif(filter_data == 1):
