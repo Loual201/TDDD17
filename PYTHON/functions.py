@@ -138,7 +138,7 @@ def get_addresses(input_address, hourly_requests, daily_requests):
 def reached_limit(hourly, daily):
     daily_limit_reached = False
 
-    if(daily >= 20): 
+    if(daily >= 100): 
         # TODO: We are exiting, should we pause it instead?
         daily_limit_reached = True
         print('You have reached your daily limit of requests, the program will exit and the fetched data is saved in a csv file') 

@@ -6,12 +6,13 @@ from ismember import ismember
 
 #****** TO COLLECT DATA FROM A ADDRESS *******
 #Set the parameters for visulazation
-address = '1C1Ford5HUusymXqEQMY3TdWQtyZtsMZAW'
+#address = '1C1Ford5HUusymXqEQMY3TdWQtyZtsMZAW'
+address = '1LaNXgq2ctDEa4fTha6PTo8sucqzieQctq'
 
 filter_data = 1 # 0 for no, 1 for yes
 
 # filter parameters
-threshold = 0
+threshold = 10000
 choice = 1 # 1 for filter by money, 2 for filter by number of transactions
 number_of_step = 4
 
@@ -19,11 +20,11 @@ number_of_step = 4
 hourly_requests = 0
 daily_requests = 0
 
-data = collect_intresting_data(address, number_of_step, choice, threshold, hourly_requests, daily_requests)
+#data = collect_intresting_data(address, number_of_step, choice, threshold, hourly_requests, daily_requests)
 
 # Store data in pickle inorder to filter
-with open('data_pickle.pickle', 'wb') as handle:
-    pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+#with open('data_pickle.pickle', 'wb') as handle:
+  #  pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 # Load data (deserialize)
 with open('data_pickle.pickle', 'rb') as handle:
@@ -52,6 +53,8 @@ elif(filter_data == 1):
     filter_datasets = []
     for data in unfiltered_data:
         filter_datasets.append(filter_by_choice(data, choice, threshold))
+    
+    print('filtering data')
 
     # Save data TODO: test that it works and how it looks
     with open('filtered_data.csv', 'w', newline='') as file:
