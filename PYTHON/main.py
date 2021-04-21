@@ -8,12 +8,12 @@ from ismember import ismember
 #Set the parameters for visulazation
 address = '1C1Ford5HUusymXqEQMY3TdWQtyZtsMZAW'
 
-filter_data = 0 # 0 for no, 1 for yes
+filter_data = 1 # 0 for no, 1 for yes
 
 # filter parameters
 threshold = 0
 choice = 1 # 1 for filter by money, 2 for filter by number of transactions
-number_of_step = 2
+number_of_step = 4
 
 # Request counter for hourly/daily limit
 hourly_requests = 0
@@ -25,6 +25,10 @@ data = collect_intresting_data(address, number_of_step, choice, threshold, hourl
 with open('data_pickle.pickle', 'wb') as handle:
     pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
+# Load data (deserialize)
+with open('data_pickle.pickle', 'rb') as handle:
+    unfiltered_data = pickle.load(handle)
+
 source_list = []
 if(filter_data == 0):
     # Save data TODO: test that it works and how it looks
@@ -32,7 +36,7 @@ if(filter_data == 0):
         writer=csv.writer(file)
         writer.writerow(['source', 'target', 'value'])
 
-        for dictionary in data:
+        for dictionary in unfiltered_data:
             addresses_dict = dictionary.get('addresses')
             value = dictionary.get('transaction_value')
             # print('Addresses_dict ', addresses_dict)
@@ -45,24 +49,22 @@ if(filter_data == 0):
                     writer.writerow([dictionary.get('source'), address, dictionary.get('transaction_value')[i]])
 
 elif(filter_data == 1):
-    # Load data (deserialize)
-    with open('data_pickle.pickle', 'rb') as handle:
-        unpacked_data = pickle.load(handle)
+    filter_datasets = []
+    for data in unfiltered_data:
+        filter_datasets.append(filter_by_choice(data, choice, threshold))
 
-    filtered_data = filter_by_choice(unpacked_data, choice, threshold)
     # Save data TODO: test that it works and how it looks
     with open('filtered_data.csv', 'w', newline='') as file:
         writer=csv.writer(file)
         writer.writerow(['source', 'target', 'value'])
 
-        for dictionary in data:
+        for dictionary in filter_datasets:
             addresses_dict = dictionary.get('addresses')
             value = dictionary.get('transaction_value')
             # print('Addresses_dict ', addresses_dict)
             # print('value ', value)
             # print('source ', dictionary.get('source'))
-
+            source_list.append(dictionary.get('source'))
             for i, address in enumerate(addresses_dict):
-                [a,b] = ismember(address, source_list)
-                if(not a):
+                if(not (address in source_list)):
                     writer.writerow([dictionary.get('source'), address, dictionary.get('transaction_value')[i]])

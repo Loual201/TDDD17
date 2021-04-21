@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import * as d3 from 'd3';
 
-import inputData from './dataset.csv';
+import inputData from './data.csv';
+//import inputData from './filtered_data.csv';
 
 import Sankey from './sankey';
 
