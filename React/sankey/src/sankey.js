@@ -4,8 +4,6 @@ import { sankey, sankeyLinkHorizontal, sankeyLeft } from 'd3-sankey';
 import chroma from 'chroma-js';
 
 const SankeyNode = ({ name, x0, x1, y0, y1, color }) => {
-  console.log(name);
-  // height ska vara y1-y0
   return (
     <rect
       x={x0}
@@ -71,26 +69,22 @@ const MysteriousSankey = ({ data, width, height }) => {
   uniquelinks = links;
 
   if (uniqueNodes.length != 0 && uniquelinks.length != 0) {
-    // console.log(sankey().nodeAlign('left'));
-    console.log(sankey());
     const { n_nodes, _n_links } = sankey()
       .nodeWidth(15)
       .nodePadding(10)
-      .nodeAlign(sankeyLeft) // TODO: Fix Left alignment
+      .nodeAlign(sankeyLeft)
       .extent([
         [1, 1],
         [width - 1, height - 5],
       ])({ nodes: nodesAsObjeccts, links: uniquelinks });
   }
 
-  // const color = chroma.scale('Set3').classes(nodesAsObjeccts.length);
-  //const color = chroma.scale('RdPu').classes(nodesAsObjeccts.length);
   const color = chroma.random(); //.classes(nodesAsObjeccts.length);
 
-  const colorScale = d3
+  /**const colorScale = d3
     .scaleLinear()
     .domain([0, nodesAsObjeccts.length])
-    .range([1, 0]);
+    .range([1, 0]);*/
 
   return (
     <g style={{ mixBlendMode: 'multiply' }}>
