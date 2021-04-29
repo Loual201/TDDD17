@@ -4,7 +4,7 @@ import pickle
 import csv
 from ismember import ismember
 """
-#****** TO COLLECT DATA FROM AN ADDRESS *******
+#****** TO COLLECT DATA FROM AN ADDRESS *******"""
 #Set the parameters for visulazation
 #address = '1C1Ford5HUusymXqEQMY3TdWQtyZtsMZAW'
 address = '1LaNXgq2ctDEa4fTha6PTo8sucqzieQctq'
@@ -22,16 +22,16 @@ data = collect_intresting_data(address, number_of_step, hourly_requests, daily_r
 with open('./collected_data/data_pickle.pickle', 'wb') as handle:
     pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-"""
+
 #****** Filter the collected data ******
 
 filter_data = 0 # 0 for no, 1 for yes
 
 # filter parameters
-threshold = 10000 #Money value or transaction threshold
-choice = 1 # 1 for filter by money, 2 for filter by number of transactions
+threshold = 3 #Money value or transaction threshold
+choice = 0 # 0 for filter top transaction values, 1 for filter by money, 2 for filter by number of transactions
 
-# Load data into pickle
+# Load data from pickle
 with open('./collected_data/data_pickle.pickle', 'rb') as handle:
     unfiltered_data = pickle.load(handle)
 

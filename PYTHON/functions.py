@@ -6,6 +6,7 @@ import time
 import plotly.graph_objects as go
 import plotly
 import csv
+import operator
 
 def collect_intresting_data(address,numb_of_step, hourly_requests, daily_requests):
  
@@ -24,7 +25,7 @@ def collect_intresting_data(address,numb_of_step, hourly_requests, daily_request
     # Add the first dictionary to the visualization array
     # This is the first (0) step in the money flow
     arr_vis.append(int_add_txs)
-   
+    arrvis["step"] = 0
     arr_step.append(0)
     current_step = 0
     arr_index = 0
@@ -43,6 +44,7 @@ def collect_intresting_data(address,numb_of_step, hourly_requests, daily_request
                 # get transactions for current address in current dictionary
                 [next_step_addresses, hourly_requests, daily_requests] = get_addresses(one_address, hourly_requests, daily_requests)
 
+                next_step_addresses['step'] = current_step+1
                 # add to array for visualization
                 arr_vis.append(next_step_addresses)
                 arr_step.append(current_step+1)
@@ -132,7 +134,35 @@ def filter_by_choice(dataset, choice, threshold, removed_transactions):
     filtered_transaction = []
     filtered_value = []
     filtered_output = []
-  
+    
+    #Filter to top transactions
+    if choice == 0:
+        other_value = 0
+        other_transaction = 0
+
+        for i in range(threshold):
+            if(len(value) != 0):
+                index, max_val = max(enumerate(value), key=operator.itemgetter(1))
+                filtered_transaction.append(transaction[index])
+                filtered_output.append(output[index])
+                filtered_value.append(max_val)
+                del value[index]
+                del output[index]
+                del transaction[index]
+        
+        for i, val in enumerate(value):
+            other_value = other_value + val
+            other_transaction = other_transaction + transaction[i]
+            removed_transactions.append(output[i])
+
+        filtered_output.append("other")
+        filtered_transaction.append(other_transaction)
+        filtered_value.append(other_value)
+
+        if(dataset.get("source") in removed_transactions):
+            dataset['source'] = 'other'
+
+    
     if choice == 1:
        
         # Look at total amount of transaction value
@@ -161,7 +191,7 @@ def save_to_csv(filename, datasets):
     source_list = []
     with open(filename, 'w', newline='') as file:
         writer=csv.writer(file)
-        writer.writerow(['source', 'target', 'value', 'count'])
+        writer.writerow(['source', 'target', 'value', 'count', 'step'])
 
         for dictionary in datasets:
             addresses_dict = dictionary.get('addresses')
@@ -169,4 +199,4 @@ def save_to_csv(filename, datasets):
             
             for i, address in enumerate(addresses_dict):
                 if(not (address in source_list)):
-                    writer.writerow([dictionary.get('source'), address, dictionary.get('transaction_value')[i], dictionary.get('count')[i]])
+                    writer.writerow([dictionary.get('source'), address, dictionary.get('transaction_value')[i], dictionary.get('count')[i], dictionary.get('step') + 1])

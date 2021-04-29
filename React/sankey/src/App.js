@@ -16,7 +16,6 @@ const App = () => {
 
   const measureSVG = () => {
     const { width, height } = svgRef.current.getBoundingClientRect();
-    console.log('width: ' + width);
 
     setWidth(width);
     setHeight(height);
