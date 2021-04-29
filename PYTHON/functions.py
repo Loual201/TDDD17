@@ -22,10 +22,10 @@ def collect_intresting_data(address,numb_of_step, hourly_requests, daily_request
     # Get all the transactions for the interesting address
     [int_add_txs, hourly_requests, daily_requests] = get_addresses(interesting_address, hourly_requests, daily_requests)
 
+    int_add_txs["step"] = 0
     # Add the first dictionary to the visualization array
     # This is the first (0) step in the money flow
     arr_vis.append(int_add_txs)
-    arrvis["step"] = 0
     arr_step.append(0)
     current_step = 0
     arr_index = 0
@@ -139,7 +139,9 @@ def filter_by_choice(dataset, choice, threshold, removed_transactions):
     if choice == 0:
         other_value = 0
         other_transaction = 0
-
+        step = dataset.get("step")
+        filtered_step = []
+        
         for i in range(threshold):
             if(len(value) != 0):
                 index, max_val = max(enumerate(value), key=operator.itemgetter(1))
@@ -152,39 +154,42 @@ def filter_by_choice(dataset, choice, threshold, removed_transactions):
         
         for i, val in enumerate(value):
             other_value = other_value + val
+  #          print('other value: ', other_value)
             other_transaction = other_transaction + transaction[i]
             removed_transactions.append(output[i])
 
-        filtered_output.append("other")
+        filtered_output.append("other" + str(step))
+        filtered_step.append(step)
         filtered_transaction.append(other_transaction)
         filtered_value.append(other_value)
+    #    print('filtered value: ', filtered_value)
 
         if(dataset.get("source") in removed_transactions):
-            dataset['source'] = 'other'
-
+            dataset['source'] = 'other' + str(step-1)
     
     if choice == 1:
-       
-        # Look at total amount of transaction value
-        for i, val in enumerate(value):
-            
-            if(val > threshold):
-                filtered_transaction.append(transaction[i])
-                filtered_output.append(output[i])
-                filtered_value.append(val)
-            else:
-                removed_transactions.append(output[i])
+       if(dataset.get('source') not in removed_transactions):
+            # Look at total amount of transaction value
+            for i, val in enumerate(value):
+                
+                if(val > threshold):
+                    filtered_transaction.append(transaction[i])
+                    filtered_output.append(output[i])
+                    filtered_value.append(val)
+                else:
+                    removed_transactions.append(output[i])
     if choice == 2:
-        # Look at number of transaction 
-        for i, tran in enumerate(transaction):
-            if(tran > threshold):
-                filtered_transaction.append(tran)
-                filtered_output.append(output[i])
-                filtered_value.append(value[i])
-            else:
-                removed_transactions.append(output[i])
+        if(dataset.get('source') not in removed_transactions):
+            # Look at number of transaction 
+            for i, tran in enumerate(transaction):
+                if(tran > threshold):
+                    filtered_transaction.append(tran)
+                    filtered_output.append(output[i])
+                    filtered_value.append(value[i])
+                else:
+                    removed_transactions.append(output[i])
 
-    return dict(addresses=filtered_output,count=filtered_transaction,transaction_value=filtered_value, source= dataset.get('source')), removed_transactions
+    return dict(addresses=filtered_output,count=filtered_transaction,transaction_value=filtered_value, source= dataset.get('source'),step=dataset.get("step")), removed_transactions
 
 
 def save_to_csv(filename, datasets):
@@ -199,4 +204,4 @@ def save_to_csv(filename, datasets):
             
             for i, address in enumerate(addresses_dict):
                 if(not (address in source_list)):
-                    writer.writerow([dictionary.get('source'), address, dictionary.get('transaction_value')[i], dictionary.get('count')[i], dictionary.get('step') + 1])
+                    writer.writerow([dictionary.get('source'), address, dictionary.get('transaction_value')[i], dictionary.get('count')[i], dictionary.get('step')])

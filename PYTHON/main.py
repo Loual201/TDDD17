@@ -4,7 +4,7 @@ import pickle
 import csv
 from ismember import ismember
 """
-#****** TO COLLECT DATA FROM AN ADDRESS *******"""
+#****** TO COLLECT DATA FROM AN ADDRESS *******
 #Set the parameters for visulazation
 #address = '1C1Ford5HUusymXqEQMY3TdWQtyZtsMZAW'
 address = '1LaNXgq2ctDEa4fTha6PTo8sucqzieQctq'
@@ -22,10 +22,10 @@ data = collect_intresting_data(address, number_of_step, hourly_requests, daily_r
 with open('./collected_data/data_pickle.pickle', 'wb') as handle:
     pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-
+"""
 #****** Filter the collected data ******
 
-filter_data = 0 # 0 for no, 1 for yes
+filter_data = 1 # 0 for no, 1 for yes
 
 # filter parameters
 threshold = 3 #Money value or transaction threshold
@@ -43,9 +43,9 @@ if(filter_data == 0):
 elif(filter_data == 1):
     removed_transactions = []
     filtered_data = []
+
     for data in unfiltered_data:
-        if(data.get('source') not in removed_transactions):
-            filt_set, removed_transactions = filter_by_choice(data, choice, threshold, removed_transactions)
-            filtered_data.append(filt_set)
+        filt_set, removed_transactions = filter_by_choice(data, choice, threshold, removed_transactions)
+        filtered_data.append(filt_set)
     
     save_to_csv('./collected_data/filtered_data.csv',  filtered_data)
