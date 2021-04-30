@@ -3,6 +3,7 @@ from functions import collect_intresting_data, filter_by_choice, save_to_csv
 import pickle
 import csv
 from ismember import ismember
+import pandas as pd
 """
 #****** TO COLLECT DATA FROM AN ADDRESS *******
 #Set the parameters for visulazation
@@ -47,5 +48,13 @@ elif(filter_data == 1):
     for data in unfiltered_data:
         filt_set, removed_transactions = filter_by_choice(data, choice, threshold, removed_transactions)
         filtered_data.append(filt_set)
+
     
     save_to_csv('./collected_data/filtered_data.csv',  filtered_data)
+    
+    if(choice == 0):
+        dataframe = pd.read_csv('./collected_data/filtered_data.csv')
+        #duplicate_transactions = dataframe[dataframe.duplicated(['source','target'])]
+        test = dataframe.groupby(['source','target']).agg({'value':'sum','count':'sum','step':'max'})
+        # print(test)
+        test.to_csv('./collected_data/filtered_data.csv')

@@ -157,11 +157,11 @@ def filter_by_choice(dataset, choice, threshold, removed_transactions):
   #          print('other value: ', other_value)
             other_transaction = other_transaction + transaction[i]
             removed_transactions.append(output[i])
-
-        filtered_output.append("other" + str(step))
-        filtered_step.append(step)
-        filtered_transaction.append(other_transaction)
-        filtered_value.append(other_value)
+        if(other_value > 0):
+            filtered_output.append("other" + str(step))
+            filtered_step.append(step)
+            filtered_transaction.append(other_transaction)
+            filtered_value.append(other_value)
     #    print('filtered value: ', filtered_value)
 
         if(dataset.get("source") in removed_transactions):
