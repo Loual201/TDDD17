@@ -3,7 +3,8 @@ import * as d3 from 'd3';
 
 // Choose which data to visualize
 //import inputData from './collected_data/data.csv';
-import inputData from './collected_data/filtered_data.csv';
+//import inputData from './collected_data/filtered_data.csv';
+import inputData from './collected_data/test_data.csv';
 
 import Sankey from './sankey';
 
