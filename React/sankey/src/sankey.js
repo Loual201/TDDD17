@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import * as d3 from 'd3';
 import { sankey, sankeyLinkHorizontal, sankeyLeft } from 'd3-sankey';
-import chroma from 'chroma-js';
+import { scaleThreshold } from 'd3-scale';
 
 const SankeyNode = ({ name, x0, x1, y0, y1, color }) => {
   return (
@@ -22,28 +22,30 @@ const SankeyLink = ({ link, color }) => (
     d={sankeyLinkHorizontal()(link)}
     style={{
       fill: 'none',
-      strokeOpacity: '.3',
+      strokeOpacity: '.5',
       stroke: color,
       strokeWidth: Math.max(1, link.width),
     }}
   />
 );
 
-const MysteriousSankey = ({ data, width, height }) => {
+const MysteriousSankey = ({ data, width, height, colorRange }) => {
   const [nodes, setNodes] = useState([]);
   const [links, setLinks] = useState([]);
 
   var uniqueNodes = [];
   var uniquelinks = [];
 
+  var colorDomain = [1, 10, 20, 50, 100, 400, 700];
+
   useEffect(() => {
     data.map((d) => {
-      setNodes((nodes) => [...nodes, { name: d.source }]);
-      setNodes((nodes) => [...nodes, { name: d.target }]);
+      setNodes((nodes) => [...nodes, { name: d.source, count: d.count }]);
+      setNodes((nodes) => [...nodes, { name: d.target, count: d.count }]);
 
       setLinks((links) => [
         ...links,
-        { source: d.source, target: d.target, value: d.value },
+        { source: d.source, target: d.target, value: d.value, count: d.count },
       ]);
     });
   }, []);
@@ -61,15 +63,16 @@ const MysteriousSankey = ({ data, width, height }) => {
     link.target = uniqueNodes.indexOf(link.target);
   });
 
+  // Gör om noderna till objekt
   var nodesAsObjeccts = [];
-  uniqueNodes.map((n) => {
+  uniqueNodes.map((n, i) => {
     nodesAsObjeccts = [...nodesAsObjeccts, { name: n }];
   });
 
   uniquelinks = links;
 
   if (uniqueNodes.length != 0 && uniquelinks.length != 0) {
-    const { n_nodes, _n_links } = sankey()
+    sankey()
       .nodeWidth(15)
       .nodePadding(10)
       .nodeAlign(sankeyLeft)
@@ -79,22 +82,42 @@ const MysteriousSankey = ({ data, width, height }) => {
       ])({ nodes: nodesAsObjeccts, links: uniquelinks });
   }
 
-  const color = chroma.random(); //.classes(nodesAsObjeccts.length);
+  var maxCount = Math.max.apply(
+    Math,
+    uniquelinks.map(function (link) {
+      return link.count;
+    })
+  );
 
-  /**const colorScale = d3
-    .scaleLinear()
-    .domain([0, nodesAsObjeccts.length])
-    .range([1, 0]);*/
+  var minCount = Math.min.apply(
+    Math,
+    uniquelinks.map(function (link) {
+      return link.count;
+    })
+  );
+
+  function palette(min, max) {
+    var col = scaleThreshold().range(colorRange).domain(colorDomain);
+    return col;
+  }
+
+  var colorScheme = palette(minCount, maxCount);
+
+  const linkColor = (l) => {
+    return colorScheme(l.count);
+  };
 
   return (
-    <g style={{ mixBlendMode: 'multiply' }}>
-      {nodesAsObjeccts.map((node, i) => (
-        <SankeyNode {...node} color={chroma.random()} key={node.name} />
-      ))}
-      {uniquelinks.map((link, i) => (
-        <SankeyLink link={link} color={chroma.random()} />
-      ))}
-    </g>
+    <>
+      <g style={{ mixBlendMode: 'multiply' }}>
+        {nodesAsObjeccts.map((node, i) => (
+          <SankeyNode {...node} color={'#808080'} key={node.name} />
+        ))}
+        {uniquelinks.map((link, i) => (
+          <SankeyLink link={link} color={linkColor(link)} />
+        ))}
+      </g>
+    </>
   );
 };
 
