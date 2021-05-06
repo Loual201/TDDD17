@@ -9,7 +9,7 @@ const SankeyNode = ({ name, x0, x1, y0, y1, color }) => {
       x={x0}
       y={y0}
       width={x1 - x0}
-      height={Math.max(y1 - y0, 1)}
+      height={Math.max(y1 - y0, 3)}
       fill={color}
     >
       <title>{name}</title>

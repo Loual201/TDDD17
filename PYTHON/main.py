@@ -58,11 +58,10 @@ elif(filter_data == 1):
 
         col_names =  ['source', 'target', 'value', 'count', 'step']
         final_data  = pd.DataFrame(columns = col_names)
-        #print(final_data)
+
         removed_targets =  []
         for i in range(number_of_step):
             step_order = dataframe.loc[dataframe['step'] == i]
-            step_order.to_csv('./collected_data/step_order.csv')
             interesting_transactions = step_order['value'].nlargest(threshold)
             
             # Get index of top transactions
@@ -71,41 +70,27 @@ elif(filter_data == 1):
 
             # Save top transactions
             interesting_transactions = step_order.iloc[rows_to_be_dropped]
-            #print(interesting_transactions)
 
             # Remove the top transactions from step_order
             step_order = step_order.drop(labels=rows_to_be_dropped, axis=0)
-
-            removed_targets = [i for i, si in enumerate(removed_targets) if np.char.startswith(si, 'other')]
+            
+            # Place all targets from step_order into removed_targets
             removed_targets = removed_targets + step_order['target'].to_list()
-            print(removed_targets)
 
+            # Change all targets in step_order from address to other
             step_order.loc[:,'target'] = 'other' + str(i)
-            #print(removed_targets)
+
             # Group to other
             step_order_combined  = pd.DataFrame(columns = col_names)
 
+            # Change sources to other if it is in removed_targets
             step_order.loc[step_order['source'].isin(removed_targets), "source"] = "other" + str(i -1)
+            interesting_transactions.loc[interesting_transactions['source'].isin(removed_targets), "source"] = "other" + str(i -1)
 
-        
+            # Combine the transactions
             step_order_combined = step_order_combined.append(step_order.groupby(['source','target']).agg({'value':'sum','count':'sum','step':'max'}).reset_index())
-            #print(step_order_combined)
-            all_data = pd.concat([step_order_combined, interesting_transactions], axis=0)
-     
-
-            #print(all_data)
-            #final_data = pd.concat([final_data,all_data ], axis = 0)
+            all_data = pd.concat([ interesting_transactions,step_order_combined], axis=0)
             final_data = final_data.append(all_data, ignore_index = True)
-        #print(final_data)
-        
 
-        #interesting_transactions.to_csv('./collected_data/interesting_Data.csv')
-        #step_order.to_csv('./collected_data/step_order2.csv')
-        final_data.to_csv('./collected_data/final_data.csv')
-
-            
-        # print(step_order)
-        # #duplicate_transactions = dataframe[dataframe.duplicated(['source','target'])]
-        # test = dataframe.groupby(['source','target']).agg({'value':'sum','count':'sum','step':'max'})
-        # #print(test)
-        # test.to_csv('./collected_data/filtered_data.csv')
+        # Save data to csv
+        final_data.to_csv('./collected_data/top_txs_data.csv')
