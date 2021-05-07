@@ -9,22 +9,23 @@ import pandas as pd
 #****** TO COLLECT DATA FROM AN ADDRESS *******
 #Set the parameters for visulazation
 #address = '1C1Ford5HUusymXqEQMY3TdWQtyZtsMZAW'
-address = '1LaNXgq2ctDEa4fTha6PTo8sucqzieQctq'
+#address = 'bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej'
+address = '1G47mSr3oANXMafVrR8UC4pzV7FEAzo3r9'
 
 # Request counter for hourly/daily limit
 hourly_requests = 0
 daily_requests = 0
 
 # Number of steps in data retrival 
-number_of_step = 4
+number_of_step = 5
 
 data = collect_intresting_data(address, number_of_step, hourly_requests, daily_requests)
 
 # Store data in pickle inorder to filter
 with open('./collected_data/data_pickle.pickle', 'wb') as handle:
     pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
 """
+
 #****** Filter the collected data ******
 
 filter_data = 1 # 0 for no, 1 for yes
