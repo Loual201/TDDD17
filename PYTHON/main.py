@@ -5,7 +5,7 @@ import csv
 from ismember import ismember
 import pandas as pd
 
-
+"""
 #****** TO COLLECT DATA FROM AN ADDRESS *******
 #Set the parameters for visulazation
 #address = '1C1Ford5HUusymXqEQMY3TdWQtyZtsMZAW'
@@ -26,11 +26,7 @@ data = collect_intresting_data(address, number_of_step, hourly_requests, daily_r
 # Store data in pickle inorder to filter
 with open('./collected_data/data_pickle.pickle', 'wb') as handle:
     pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
-<<<<<<< HEAD
 """
-=======
-
->>>>>>> 05c4ef338772f2536152c2ec9fdd1681bea8795f
 
 #****** Filter the collected data ******
 
