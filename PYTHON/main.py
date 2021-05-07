@@ -5,18 +5,19 @@ import csv
 from ismember import ismember
 import pandas as pd
 
-"""
+
 #****** TO COLLECT DATA FROM AN ADDRESS *******
 #Set the parameters for visulazation
 #address = '1C1Ford5HUusymXqEQMY3TdWQtyZtsMZAW'
-address = '1LaNXgq2ctDEa4fTha6PTo8sucqzieQctq'
+#address = '1LaNXgq2ctDEa4fTha6PTo8sucqzieQctq'
+address = '1M3jWAPH6Uq5ZS1GwB1jcfkPuRXBscdXw1'
 
 # Request counter for hourly/daily limit
 hourly_requests = 0
 daily_requests = 0
 
 # Number of steps in data retrival 
-number_of_step = 4
+number_of_step = 5
 
 data = collect_intresting_data(address, number_of_step, hourly_requests, daily_requests)
 
@@ -24,10 +25,10 @@ data = collect_intresting_data(address, number_of_step, hourly_requests, daily_r
 with open('./collected_data/data_pickle.pickle', 'wb') as handle:
     pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-"""
+
 #****** Filter the collected data ******
 
-filter_data = 1 # 0 for no, 1 for yes
+filter_data = 0 # 0 for no, 1 for yes
 number_of_step = 4
 # filter parameters
 threshold = 3 # Top money value or transaction threshold

@@ -78,7 +78,7 @@ def get_addresses(input_address, hourly_requests, daily_requests):
         return [dict(addresses=arr,count=count,transaction_value=values,source=input_address), hourly_requests, daily_requests]
 
     temp = True
-    while(n_tx > 0 and daily_limit_reached == False and temp == True): #TODO: remove temp??
+    while(n_tx > 0 and daily_limit_reached == False): #TODO: remove temp??
         temp == False
         daily_limit_reached, hourly_requests = reached_limit(hourly_requests, daily_requests)
 
@@ -91,7 +91,7 @@ def get_addresses(input_address, hourly_requests, daily_requests):
                 nr_txs = nr_txs + 1
                 addresses = t.get('outputs')[0].get('addresses')
             
-                if(addresses[0] != input_address):
+                if(addresses and addresses[0] != input_address):
                     [a, b] = ismember(addresses, arr)
                     if a:
                         count[b[0]] = count[b[0]] + 1
@@ -102,7 +102,7 @@ def get_addresses(input_address, hourly_requests, daily_requests):
                         count.append(c)
                         values.append(t.get('outputs')[0].get('value'))
             
-            if(address_info.get("hasMore") and temp == True):
+            if(address_info.get("hasMore")):
                 address_info = get_address_full(address=input_address, txn_limit=tx_limit,before_bh=morevalues)
                 n_tx = address_info.get('n_tx')
                 
@@ -114,7 +114,7 @@ def get_addresses(input_address, hourly_requests, daily_requests):
 def reached_limit(hourly, daily):
     daily_limit_reached = False
 
-    if(daily >= 100): 
+    if(daily >= 1000): 
         daily_limit_reached = True
         print('You have reached your daily limit of requests, the program will exit and the fetched data is saved in a csv file') 
         return daily_limit_reached, hourly 
